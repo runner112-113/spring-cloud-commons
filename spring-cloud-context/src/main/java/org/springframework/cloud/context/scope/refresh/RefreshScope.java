@@ -108,12 +108,17 @@ public class RefreshScope extends GenericScope
 		super.postProcessBeanDefinitionRegistry(registry);
 	}
 
+	/**
+	 * 当容器初始化好了后  去初始化那些没初始化的bean（前提是被标记的@RefreshScope）
+	 * @param event
+	 */
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		start(event);
 	}
 
 	public void start(ContextRefreshedEvent event) {
+		// 判断事件发出者是不是当前容器
 		if (event.getApplicationContext() == this.context && this.eager && this.registry != null) {
 			eagerlyInitialize();
 		}
@@ -122,9 +127,12 @@ public class RefreshScope extends GenericScope
 	private void eagerlyInitialize() {
 		for (String name : this.context.getBeanDefinitionNames()) {
 			BeanDefinition definition = this.registry.getBeanDefinition(name);
+			// 凡是别标记@RefreshScope 的bean会在此被提前初始化
+			// 标记为Lazy的bean
 			if (this.getName().equals(definition.getScope()) && !definition.isLazyInit()) {
 				Object bean = this.context.getBean(name);
 				if (bean != null) {
+					// bean可能是代理的 bean加载动态代理的相关bean
 					bean.getClass();
 				}
 			}
@@ -155,6 +163,7 @@ public class RefreshScope extends GenericScope
 		}
 		// Ensure lifecycle is finished if bean was disposable
 		if (super.destroy(name)) {
+			// 销毁成功  发出RefreshScopeRefreshedEvent事件
 			this.context.publishEvent(new RefreshScopeRefreshedEvent(name));
 			return true;
 		}

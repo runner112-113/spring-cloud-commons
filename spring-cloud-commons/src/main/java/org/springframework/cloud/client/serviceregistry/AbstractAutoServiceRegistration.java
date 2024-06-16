@@ -150,6 +150,7 @@ public abstract class AbstractAutoServiceRegistration<R extends Registration>
 		// only initialize if nonSecurePort is greater than 0 and it isn't already running
 		// because of containerPortInitializer below
 		if (!this.running.get()) {
+			// 发布 InstancePreRegisteredEvent 事件
 			this.context.publishEvent(new InstancePreRegisteredEvent(this, getRegistration()));
 			registrationLifecycles.forEach(
 					registrationLifecycle -> registrationLifecycle.postProcessBeforeStartRegister(getRegistration()));

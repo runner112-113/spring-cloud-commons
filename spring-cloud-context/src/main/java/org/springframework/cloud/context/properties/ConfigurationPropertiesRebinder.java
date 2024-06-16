@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
  *
  */
 @Component
-@ManagedResource
+@ManagedResource //JMX托管
 public class ConfigurationPropertiesRebinder
 		implements ApplicationContextAware, ApplicationListener<EnvironmentChangeEvent> {
 
@@ -134,7 +134,12 @@ public class ConfigurationPropertiesRebinder
 				if (getNeverRefreshable().contains(bean.getClass().getName())) {
 					return false; // ignore
 				}
+				// 执行Bean的销毁方法，包括：
+				// 1、实现 DisposableBean destroy()
+				// 2、注解 @PreDestroy 方法
+				// 3、自定义指定方法 <bean destroy-method="..."> 或 @Bean(destroyMethod="...")
 				appContext.getAutowireCapableBeanFactory().destroyBean(bean);
+				// 重新初始化bean
 				appContext.getAutowireCapableBeanFactory().initializeBean(bean, name);
 				return true;
 			}
@@ -164,6 +169,7 @@ public class ConfigurationPropertiesRebinder
 
 	@Override
 	public void onApplicationEvent(EnvironmentChangeEvent event) {
+		// 事件源是不是当前上下文
 		if (this.applicationContext.equals(event.getSource())
 				// Backwards compatible
 				|| event.getKeys().equals(event.getSource())) {
