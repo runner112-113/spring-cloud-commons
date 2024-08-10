@@ -39,7 +39,7 @@ import org.springframework.cloud.loadbalancer.config.LoadBalancerZoneConfig;
  */
 public class ZonePreferenceServiceInstanceListSupplier extends DelegatingServiceInstanceListSupplier {
 
-	private final String ZONE = "zone";
+	private static final String ZONE = "zone";
 
 	private final LoadBalancerZoneConfig zoneConfig;
 
@@ -59,7 +59,7 @@ public class ZonePreferenceServiceInstanceListSupplier extends DelegatingService
 		super(delegate);
 		this.zoneConfig = zoneConfig;
 		callGetWithRequestOnDelegates = loadBalancerClientFactory.getProperties(getServiceId())
-				.isCallGetWithRequestOnDelegates();
+			.isCallGetWithRequestOnDelegates();
 	}
 
 	@Override

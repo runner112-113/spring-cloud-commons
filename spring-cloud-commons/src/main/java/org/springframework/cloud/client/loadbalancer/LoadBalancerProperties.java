@@ -139,6 +139,7 @@ public class LoadBalancerProperties {
 	 */
 	private XForwarded xForwarded = new XForwarded();
 
+	// TODO: fix spelling in a major release
 	public void setxForwarded(XForwarded xForwarded) {
 		this.xForwarded = xForwarded;
 	}
@@ -429,7 +430,7 @@ public class LoadBalancerProperties {
 
 		public void setRetryableExceptions(Set<Class<? extends Throwable>> retryableExceptions) {
 			retryableExceptions
-					.add(org.springframework.cloud.client.loadbalancer.reactive.RetryableStatusCodeException.class);
+				.add(org.springframework.cloud.client.loadbalancer.reactive.RetryableStatusCodeException.class);
 			this.retryableExceptions = retryableExceptions;
 		}
 

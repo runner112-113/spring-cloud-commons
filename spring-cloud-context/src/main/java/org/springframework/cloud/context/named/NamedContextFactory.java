@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.cloud.context.named;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,9 +48,8 @@ import org.springframework.util.Assert;
 
 /**
  * Creates a set of child contexts that allows a set of Specifications to define the beans
- * in each child context.
- *
- * Ported from spring-cloud-netflix FeignClientFactory and SpringClientFactory
+ * in each child context. Ported from spring-cloud-netflix FeignClientFactory and
+ * SpringClientFactory
  *
  * @param <C> specification
  * @author Spencer Gibb
@@ -67,11 +68,11 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 
 	private final Map<String, GenericApplicationContext> contexts = new ConcurrentHashMap<>();
 
-	private Map<String, C> configurations = new ConcurrentHashMap<>();
+	private final Map<String, C> configurations = new ConcurrentHashMap<>();
 
 	private ApplicationContext parent;
 
-	private Class<?> defaultConfigType;
+	private final Class<?> defaultConfigType;
 
 	public NamedContextFactory(Class<?> defaultConfigType, String propertySourceName, String propertyName) {
 		this(defaultConfigType, propertySourceName, propertyName, new HashMap<>());
@@ -179,8 +180,10 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 					: new AnnotationConfigApplicationContext();
 		}
 		context.setClassLoader(classLoader);
-		context.getEnvironment().getPropertySources().addFirst(
-				new MapPropertySource(this.propertySourceName, Collections.singletonMap(this.propertyName, name)));
+		context.getEnvironment()
+			.getPropertySources()
+			.addFirst(
+					new MapPropertySource(this.propertySourceName, Collections.singletonMap(this.propertyName, name)));
 		if (this.parent != null) {
 			// Uses Environment from parent as well as beans
 			context.setParent(this.parent);
@@ -222,14 +225,29 @@ public abstract class NamedContextFactory<C extends NamedContextFactory.Specific
 	public <T> T getInstance(String name, ResolvableType type) {
 		GenericApplicationContext context = getContext(name);
 		String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context, type);
-		if (beanNames.length > 0) {
-			for (String beanName : beanNames) {
-				if (context.isTypeMatch(beanName, type)) {
-					return (T) context.getBean(beanName);
-				}
+		for (String beanName : beanNames) {
+			if (context.isTypeMatch(beanName, type)) {
+				return (T) context.getBean(beanName);
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getAnnotatedInstance(String name, ResolvableType type, Class<? extends Annotation> annotationType) {
+		GenericApplicationContext context = getContext(name);
+		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(context, annotationType);
+
+		List<T> beans = new ArrayList<>();
+		for (String beanName : beanNames) {
+			if (context.isTypeMatch(beanName, type)) {
+				beans.add((T) context.getBean(beanName));
+			}
+		}
+		if (beans.size() > 1) {
+			throw new IllegalStateException("Only one annotated bean for type expected.");
+		}
+		return beans.isEmpty() ? null : beans.get(0);
 	}
 
 	public <T> Map<String, T> getInstances(String name, Class<T> type) {

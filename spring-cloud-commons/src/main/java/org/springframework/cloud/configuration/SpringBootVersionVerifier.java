@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringBootVersion;
-import org.springframework.boot.autoconfigure.validation.ValidationConfigurationCustomizer;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,7 +35,7 @@ class SpringBootVersionVerifier implements CompatibilityVerifier {
 
 	final Map<String, CompatibilityPredicate> ACCEPTED_VERSIONS = new HashMap<>() {
 		{
-			this.put("3.2", is3_2());
+			this.put("3.4", is3_4());
 		}
 	};
 
@@ -71,12 +70,12 @@ class SpringBootVersionVerifier implements CompatibilityVerifier {
 		return SpringBootVersion.getVersion();
 	}
 
-	CompatibilityPredicate is3_2() {
+	CompatibilityPredicate is3_4() {
 		return new CompatibilityPredicate() {
 
 			@Override
 			public String toString() {
-				return "Predicate for Boot 3.2";
+				return "Predicate for Boot 3.4";
 			}
 
 			@Override
@@ -88,31 +87,6 @@ class SpringBootVersionVerifier implements CompatibilityVerifier {
 				catch (ClassNotFoundException e) {
 					return false;
 				}
-
-			}
-		};
-	}
-
-	CompatibilityPredicate is3_1() {
-		return new CompatibilityPredicate() {
-
-			@Override
-			public String toString() {
-				return "Predicate for Boot 3.1";
-			}
-
-			@Override
-			public boolean isCompatible() {
-				try {
-					// since 3.1
-					ValidationConfigurationCustomizer.class.getMethod("setIgnoreRegistrationFailure", boolean.class);
-					return true;
-
-				}
-				catch (NoSuchMethodException e) {
-					return false;
-				}
-
 			}
 		};
 	}
@@ -127,14 +101,14 @@ class SpringBootVersionVerifier implements CompatibilityVerifier {
 	}
 
 	private String action() {
-		return String.format(
-				"""
-						Change Spring Boot version to one of the following versions %s .
-						You can find the latest Spring Boot versions here [%s].\s
-						If you want to learn more about the Spring Cloud Release train compatibility, you can visit this page [%s] and check the [Release Trains] section.
-						If you want to disable this check, just set the property [spring.cloud.compatibility-verifier.enabled=false]""",
-				this.acceptedVersions, "https://spring.io/projects/spring-boot#learn",
-				"https://spring.io/projects/spring-cloud#overview");
+		return String
+			.format("""
+					Change Spring Boot version to one of the following versions %s .
+					You can find the latest Spring Boot versions here [%s].\s
+					If you want to learn more about the Spring Cloud Release train compatibility, you can visit this page [%s] and check the [Release Trains] section.
+					If you want to disable this check, just set the property [spring.cloud.compatibility-verifier.enabled=false]""",
+					this.acceptedVersions, "https://spring.io/projects/spring-boot#learn",
+					"https://spring.io/projects/spring-cloud#overview");
 	}
 
 	private boolean springBootVersionMatches() {
@@ -151,7 +125,7 @@ class SpringBootVersionVerifier implements CompatibilityVerifier {
 				// otherwise this could lead to false positives for future
 				// versions of boot
 				CompatibilityPredicate predicate = this.ACCEPTED_VERSIONS
-						.get(stripWildCardFromVersion(acceptedVersion));
+					.get(stripWildCardFromVersion(acceptedVersion));
 				if (predicate != null && predicate.isCompatible()) {
 					if (log.isDebugEnabled()) {
 						log.debug("Predicate [" + predicate + "] was matched");

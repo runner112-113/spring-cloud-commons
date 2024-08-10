@@ -14,7 +14,13 @@ TIP: It is possible to disable Spring Cloud LoadBalancer by setting the value of
 
 Spring Cloud LoadBalancer creates a separate Spring child context for each service id. By default, these contexts are initialised lazily, whenever the first request for a service id is being load-balanced.
 
-You can choose to load those contexts eagerly. In order to do that, specify the service ids for which you want to do eager load using the `spring.cloud-loadbalancer.eager-load.clients` property.
+You can choose to load those contexts eagerly. In order to do that, specify the service ids for which you want to do eager load using the `spring.cloud.loadbalancer.eager-load.clients` property, for example:
+
+[source]
+----
+spring.cloud-loadbalancer.eager-load.clients[0]=my-first-client
+spring.cloud-loadbalancer.eager-load.clients[1]=my-second-client
+----
 
 [[switching-between-the-load-balancing-algorithms]]
 == Switching between the load-balancing algorithms
@@ -57,7 +63,7 @@ You can see more information and examples of usage in the following sections:
 
 Apart from the basic `ServiceInstanceListSupplier` implementation that retrieves instances via `DiscoveryClient` each time it has to choose an instance, we provide two caching implementations.
 
-[[https://github-com/ben-manes/caffeine[caffeine]-backed-loadbalancer-cache-implementation]]
+[[caffeine-backed-loadbalancer-cache-implementation]]
 === https://github.com/ben-manes/caffeine[Caffeine]-backed LoadBalancer Cache Implementation
 
 If you have `com.github.ben-manes.caffeine:caffeine` in the classpath, Caffeine-based implementation will be used.

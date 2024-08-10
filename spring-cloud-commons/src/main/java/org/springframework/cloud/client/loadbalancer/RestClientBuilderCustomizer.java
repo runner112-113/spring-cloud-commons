@@ -25,7 +25,9 @@ import org.springframework.web.client.RestClient;
  *
  * @author Olga Maciaszek-Sharma
  * @since 4.1.1
+ * @deprecated to be removed in the next major release.
  */
+@Deprecated(forRemoval = true)
 public interface RestClientBuilderCustomizer {
 
 	void customize(RestClient.Builder restClientBuilder);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.cloud.loadbalancer.core.LoadBalancerTestUtils.buildLoadBalancerClientFactory;
 
 /**
- * Tests for {@link SubsetServiceInstanceListSupplier}
+ * Tests for {@link SubsetServiceInstanceListSupplier}.
  *
  * @author Zhuozhi Ji
  */
@@ -94,8 +94,8 @@ class SubsetServiceInstanceListSupplierTest {
 	@Test
 	void shouldReturnSublistWithGivenSubsetSize() {
 		List<ServiceInstance> instances = IntStream.range(0, 101)
-				.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
-				.collect(Collectors.toList());
+			.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
+			.collect(Collectors.toList());
 
 		when(delegate.getServiceId()).thenReturn("test");
 		when(delegate.get()).thenReturn(Flux.just(instances));
@@ -109,8 +109,8 @@ class SubsetServiceInstanceListSupplierTest {
 	@Test
 	void shouldReturnRawWhenLessThanSubsetSize() {
 		List<ServiceInstance> instances = IntStream.range(0, 101)
-				.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
-				.collect(Collectors.toList());
+			.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
+			.collect(Collectors.toList());
 
 		when(delegate.getServiceId()).thenReturn("test");
 		when(delegate.get()).thenReturn(Flux.just(instances));
@@ -124,8 +124,8 @@ class SubsetServiceInstanceListSupplierTest {
 	@Test
 	void shouldReturnSameSublistForSameInstanceId() {
 		List<ServiceInstance> instances = IntStream.range(0, 101)
-				.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
-				.collect(Collectors.toList());
+			.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
+			.collect(Collectors.toList());
 
 		when(delegate.getServiceId()).thenReturn("test");
 		when(delegate.get()).thenReturn(Flux.just(instances));
@@ -144,8 +144,8 @@ class SubsetServiceInstanceListSupplierTest {
 	@Test
 	void shouldReturnDifferentSublistForDifferentInstanceId() {
 		List<ServiceInstance> instances = IntStream.range(0, 101)
-				.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
-				.collect(Collectors.toList());
+			.mapToObj(i -> new DefaultServiceInstance(Integer.toString(i), "test", "host" + i, 8080, false, null))
+			.collect(Collectors.toList());
 
 		when(delegate.getServiceId()).thenReturn("test");
 		when(delegate.get()).thenReturn(Flux.just(instances));
